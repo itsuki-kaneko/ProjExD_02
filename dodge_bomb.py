@@ -11,6 +11,20 @@ delta = {pg.K_UP: (0, -5),
          pg.K_RIGHT: (+5, 0)}  # 練習3 移動量辞書
 
 
+def check_bound(rect: pg.Rect) -> tuple[bool, bool]:
+    """
+    オブジェクトが画面外に出そうになるかどうかの判定
+    引数:対象のrect 戻り値:真理値のタプル(ヨコ, タテ) 
+    戻り値は画面内ならFalse、画面外ならTrue
+    """
+    yoko, tate = False, False
+    if rect.left < 0 or WIDTH < rect.right:
+        yoko = True
+    if rect.top < 0 or HEIGHT < rect.bottom:
+        tate = True
+    return (yoko, tate)
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -43,8 +57,15 @@ def main():
 
         screen.blit(bg_img, [0, 0])
         kk_rct.move_ip(sum_mv[0], sum_mv[1])
+        if check_bound(kk_rct) != (False, False):
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
         bomb_rect.move_ip(vx, vy)  # 練習2 爆弾の移動
+        yoko, tate = check_bound(bomb_rect)
+        if yoko:
+            vx *= -1
+        if tate:
+            vy *= -1
         screen.blit(bomb_img, bomb_rect)
         pg.display.update()
         tmr += 1
