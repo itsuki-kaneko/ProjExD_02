@@ -3,10 +3,9 @@ import random
 import pygame as pg
 
 
-
 WIDTH, HEIGHT = 1600, 900
 delta = {pg.K_UP: (0, -5), 
-         pg.K_DOWN: (0, +5),  #key:移動量, value(ヨコ, タテ)
+         pg.K_DOWN: (0, +5),  # key:移動量, value(ヨコ, タテ)
          pg.K_LEFT: (-5, 0),
          pg.K_RIGHT: (+5, 0)}  # 練習3 移動量辞書
 
@@ -25,7 +24,7 @@ def check_bound(rect: pg.Rect) -> tuple[bool, bool]:
     return (yoko, tate)
 
 
-def kokaton_rotate(kk_img: pg.Surface):  # 課題1:こうかとん画像を切り替えるための辞書を用意する関数
+def kokaton_rotate(kk_img: pg.Surface) -> dict:  # 課題1 こうかとん画像を切り替えるための辞書を用意する関数
     """
     こうかとんの移動量のタプルとrotozoomした画像の辞書を返す
     引数:こうかとんの画像(Surface型)
@@ -43,7 +42,7 @@ def kokaton_rotate(kk_img: pg.Surface):  # 課題1:こうかとん画像を切�
         kk = pg.transform.flip(kk, flip, False)
         kk = pg.transform.rotozoom(kk, angle, 2.0)
         kk_imgs[k] = kk  # key:移動量タプル value:手を加えたこうかとんsurface
-        angle += 45  #角度を45度回す
+        angle += 45  # 角度を45度回す
     kk_imgs[kk_mv[8]] = pg.transform.rotozoom(kk_img, 0, 2.0)  # 静止状態の画像を追加
     return kk_imgs
 
@@ -53,13 +52,13 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")  # 背景画像
     kk_img = pg.image.load("ex02/fig/3.png")  # こうかとんその3
-    kk_imgs = kokaton_rotate(kk_img)  # 課題1:こうかとん画像を切り替えるための辞書を用意する関数
+    kk_imgs = kokaton_rotate(kk_img)  # 課題1 こうかとん画像を切り替えるための辞書を用意する関数
     kk_rct = kk_img.get_rect()  # 練習3 こうかとんrect
     kk_rct.center = 900, 400
     bomb_img = pg.Surface((20, 20))  # 練習1 爆弾surfaceを作る
     bomb_img.set_colorkey((0, 0, 0))
     pg.draw.circle(bomb_img, (255, 0, 0), (10, 10), 10)
-    bomb_boost = 1.2  # 課題2: 爆弾の加速度
+    bomb_boost = 1.2  # 課題2 爆弾の加速度
     bomb_rect = bomb_img.get_rect()
     bomb_rect.centerx = random.randint(0, WIDTH)
     bomb_rect.centery = random.randint(0, HEIGHT)
@@ -81,7 +80,7 @@ def main():
             print("GAME OVER")
             return
         
-        if (tmr+1) % 250 == 0 and (tmr+1) // 250 <= 10:  # 課題2: 時間カウントが250ごとに(5秒ごとに)1加速、最大10回
+        if (tmr+1) % 250 == 0 and (tmr+1) // 250 <= 10:  # 課題2 時間カウントが250ごとに(5秒ごとに)1加速、最大10回
             vx *= bomb_boost  # vx, vyそれぞれにbomb_boostを掛けることでvx, vyの正負に関係なく加速するようにする
             vy *= bomb_boost
         key_lst = pg.key.get_pressed()
@@ -95,7 +94,7 @@ def main():
         kk_rct.move_ip(sum_mv[0], sum_mv[1])
         if check_bound(kk_rct) != (False, False):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
-        screen.blit(kk_imgs[(sum_mv[0], sum_mv[1])], kk_rct)  # 課題1:kk_imgsがsum_mvにあうようにする
+        screen.blit(kk_imgs[(sum_mv[0], sum_mv[1])], kk_rct)  # 課題1 kk_imgsがsum_mvにあうようにする
         bomb_rect.move_ip(vx, vy)  # 練習2 爆弾の移動
         yoko, tate = check_bound(bomb_rect)
         if yoko:
