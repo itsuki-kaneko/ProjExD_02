@@ -25,7 +25,7 @@ def check_bound(rect: pg.Rect) -> tuple[bool, bool]:
     return (yoko, tate)
 
 
-def kokaton_rotate(kk_img: pg.Surface):  # 課題1:飛ぶ方向に従ってこうかとん画像を切り替える
+def kokaton_rotate(kk_img: pg.Surface):  # 課題1:こうかとん画像を切り替えるための辞書を用意する関数
     """
     こうかとんの移動量のタプルとrotozoomした画像の辞書を返す
     引数:こうかとんの画像(Surface型)
@@ -44,7 +44,7 @@ def kokaton_rotate(kk_img: pg.Surface):  # 課題1:飛ぶ方向に従ってこ�
         kk = pg.transform.rotozoom(kk, angle, 2.0)
         kk_imgs[k] = kk  # key:移動量タプル value:手を加えたこうかとんsurface
         angle += 45  #角度を45度回す
-    kk_imgs[kk_mv[8]] = pg.transform.rotozoom(kk_img, 0, 2.0)
+    kk_imgs[kk_mv[8]] = pg.transform.rotozoom(kk_img, 0, 2.0)  # 静止状態の画像を追加
     return kk_imgs
 
 
@@ -77,11 +77,12 @@ def main():
             screen.blit(bg_img, [0, 0])
             screen.blit(kk_go, kk_rct)
             pg.display.update()  # 課題3 画面のアップデート(画像表示)
-            clock.tick(1)  # 課題3 画像の表示時間を作る
+            clock.tick(1)  # 課題3 画像の表示時間を作る(1秒間)
             print("GAME OVER")
             return
+        
         if (tmr+1) % 250 == 0 and (tmr+1) // 250 <= 10:  # 課題2: 時間カウントが250ごとに(5秒ごとに)1加速、最大10回
-            vx *= bomb_boost
+            vx *= bomb_boost  # vx, vyそれぞれにbomb_boostを掛けることでvx, vyの正負に関係なく加速するようにする
             vy *= bomb_boost
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]  # 合計移動量
@@ -89,6 +90,7 @@ def main():
             if key_lst[k]:
                 sum_mv[0] += tpl[0]
                 sum_mv[1] += tpl[1]
+
         screen.blit(bg_img, [0, 0])
         kk_rct.move_ip(sum_mv[0], sum_mv[1])
         if check_bound(kk_rct) != (False, False):
