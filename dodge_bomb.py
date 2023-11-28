@@ -25,12 +25,35 @@ def check_bound(rect: pg.Rect) -> tuple[bool, bool]:
     return (yoko, tate)
 
 
+def kokaton_rotate(kk_img: pg.Surface):  # 課題1:飛ぶ方向に従ってこうかとん画像を切り替える
+    """
+    こうかとんの移動量のタプルとrotozoomした画像の辞書を返す
+    引数:こうかとんの画像(Surface型)
+    戻り値:移動量タプルとrotozoom画像の辞書
+    """
+    kk_imgs = {}
+    kk_mv = [(0, +5), (+5, +5), (+5, 0), (+5, -5), (0, -5), (-5, -5), (-5, 0), (-5, +5), (0, 0)]  # 移動量のタプルのリスト
+    angle = -90  # こうかとんの角度
+    flip = True
+    for k in kk_mv[:8]:
+        if angle > 90:  # 角度が半周以上したら
+            angle -= 180  # 角度を一度リセットして
+            flip = False  # 左右反転
+        kk = kk_img
+        kk = pg.transform.flip(kk, flip, False)
+        kk = pg.transform.rotozoom(kk, angle, 2.0)
+        kk_imgs[k] = kk  # key:移動量タプル value:手を加えたこうかとんsurface
+        angle += 45  #角度を45度回す
+    kk_imgs[kk_mv[8]] = pg.transform.rotozoom(kk_img, 0, 2.0)
+    return kk_imgs
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")  # 背景画像
     kk_img = pg.image.load("ex02/fig/3.png")  # こうかとんその3
-    kk_img = pg.transform.rotozoom(kk_img, 0, 2.0) 
+    kk_imgs = kokaton_rotate(kk_img)  # 課題1:こうかとん画像を切り替えるための辞書を用意する関数
     kk_rct = kk_img.get_rect()  # 練習3 こうかとんrect
     kk_rct.center = 900, 400
     bomb_img = pg.Surface((20, 20))  # 練習1 爆弾surfaceを作る
@@ -56,12 +79,11 @@ def main():
             if key_lst[k]:
                 sum_mv[0] += tpl[0]
                 sum_mv[1] += tpl[1]
-
         screen.blit(bg_img, [0, 0])
         kk_rct.move_ip(sum_mv[0], sum_mv[1])
         if check_bound(kk_rct) != (False, False):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
-        screen.blit(kk_img, kk_rct)
+        screen.blit(kk_imgs[(sum_mv[0], sum_mv[1])], kk_rct)  # 課題1:kk_imgsがsum_mvにあうようにする
         bomb_rect.move_ip(vx, vy)  # 練習2 爆弾の移動
         yoko, tate = check_bound(bomb_rect)
         if yoko:
@@ -71,7 +93,7 @@ def main():
         screen.blit(bomb_img, bomb_rect)
         pg.display.update()
         tmr += 1
-        clock.tick(10)
+        clock.tick(50)
 
 
 if __name__ == "__main__":
