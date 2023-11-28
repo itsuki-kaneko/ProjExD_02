@@ -59,6 +59,7 @@ def main():
     bomb_img = pg.Surface((20, 20))  # 練習1 爆弾surfaceを作る
     bomb_img.set_colorkey((0, 0, 0))
     pg.draw.circle(bomb_img, (255, 0, 0), (10, 10), 10)
+    bomb_boost = 1.2  # 課題2: 爆弾の加速度
     bomb_rect = bomb_img.get_rect()
     bomb_rect.centerx = random.randint(0, WIDTH)
     bomb_rect.centery = random.randint(0, HEIGHT)
@@ -73,6 +74,9 @@ def main():
         if kk_rct.colliderect(bomb_rect):
             print("GAME OVER")
             return
+        if (tmr+1) % 250 == 0 and (tmr+1) // 250 <= 10:  # 時間カウントが250ごとに(5秒ごとに)1加速、最大10回
+            vx *= bomb_boost
+            vy *= bomb_boost
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]  # 合計移動量
         for k, tpl in delta.items():  # 練習3 こうかとんの移動量
