@@ -72,9 +72,15 @@ def main():
             if event.type == pg.QUIT: 
                 return
         if kk_rct.colliderect(bomb_rect):
+            kk_go = pg.image.load("ex02/fig/8.png")  # 課題3 ゲームオーバー画像のロード
+            kk_go = pg.transform.rotozoom(kk_go, 0, 2.0)
+            screen.blit(bg_img, [0, 0])
+            screen.blit(kk_go, kk_rct)
+            pg.display.update()  # 課題3 画面のアップデート(画像表示)
+            clock.tick(1)  # 課題3 画像の表示時間を作る
             print("GAME OVER")
             return
-        if (tmr+1) % 250 == 0 and (tmr+1) // 250 <= 10:  # 時間カウントが250ごとに(5秒ごとに)1加速、最大10回
+        if (tmr+1) % 250 == 0 and (tmr+1) // 250 <= 10:  # 課題2: 時間カウントが250ごとに(5秒ごとに)1加速、最大10回
             vx *= bomb_boost
             vy *= bomb_boost
         key_lst = pg.key.get_pressed()
